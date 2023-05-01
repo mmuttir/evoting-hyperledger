@@ -1,0 +1,37 @@
+OrdererOrgs:
+  - Name: OrdererOrg
+    Domain: example.com
+    Specs:
+      - Hostname: orderer
+
+PeerOrgs:
+  - Name: Events
+    Domain: events.example.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  - Name: Promotion
+    Domain: promotion.example.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  - Name: Registeration
+    Domain: registeration.example.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  - Name: Sports
+    Domain: sports.example.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  - Name: SportsFemale
+    Domain: sportsfemale.example.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1

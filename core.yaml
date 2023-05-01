@@ -1,0 +1,92 @@
+# --- Logging ---
+
+logging:
+  level: info
+  format: "%{color}%{time:2006-01-02T15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}"
+  output: stdout
+
+# --- Metrics ---
+
+metrics:
+  provider: prometheus
+  statsd:
+    enabled: false
+  prometheus:
+    enabled: true
+    endpoint: prometheus:9090
+    jobLabel: peer
+
+# --- Peer ---
+
+peer:
+  id: peer0
+  address: localhost:7051
+  gossip:
+    bootstrap: localhost:7051
+    externalEndpoint: localhost:7051
+    useLeaderElection: true
+    orgLeader: false
+    membershipTrackerInterval: 5s
+    publishStateInfoInterval: 5s
+    publishCertPeriod: 10s
+    stateInfoRetentionInterval: 0s
+  tls:
+    enabled: true
+    certFile: /etc/hyperledger/fabric/tls/server.crt
+    keyFile: /etc/hyperledger/fabric/tls/server.key
+  authentication:
+    timewindow: 15m
+  chaincode:
+    builder: chaincode-golang
+    golang:
+      runtime: golang:1.16
+    installTimeout: 300s
+    startuptimeout: 300s
+    executetimeout: 30s
+    cacheSize: 100
+  deliveryclient:
+    reconnectTotalTimeThreshold: 60m
+    reconnectBackoffThreshold: 2s
+    reconnectExponentialFactor: 1.5
+  events:
+    address: localhost:7053
+    buffersize: 100
+    timewindow: 1h
+  fileSystemPath: /var/hyperledger/production
+  state:
+    stateDatabase: goleveldb
+    couchDBConfig:
+      couchDBAddress: localhost:5984
+      username: ""
+      password: ""
+      maxRetries: 3
+      maxRetriesOnStartup: 10
+      requestTimeout: 35s
+      queryLimit: 1000
+      cacheSize: 5000
+  ledger:
+    blockchain:
+      useCausalOrdering: true
+    history:
+      enableHistoryDatabase: true
+  delivery:
+    client:
+      reconnectTotalTimeThreshold: 60m
+      reconnectBackoffThreshold: 2s
+      reconnectExponentialFactor: 1.5
+    timeout: 60s
+  validator:
+    enabled: true
+    ledgerHeightCheckPointers:
+      historyLeveldbCheckPointInterval: 300
+      historyLeveldbKeepCheckpoints: 2
+      historyLeveldbMaxOpenFiles: 500
+      historyLeveldbBlockSize: 1000
+      historyLeveldbBlockCacheSize: 8
+      historyLeveldbBloomFilterSize: 10
+      historyLeveldbCompression: true
+  discovery:
+    enabled: true
+    authCacheMaxSize: 1000
+    authCachePurgeRetentionRatio: 0.75
+    authCacheMaxAge: 5m

@@ -1,0 +1,251 @@
+---
+# Orderer configuration
+Capabilities:
+  Application: &ApplicationCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Channel: &ChannelCapabilities
+    V2_0: true
+Organizations:
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: ./crypto-config/ordererOrganizations/example.com/msp
+    Policies: &OrdererPolicies
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+  - &Events
+    Name: EventsMSP
+    ID: EventsMSP
+    MSPDir: ./crypto-config/peerOrganizations/events.example.com/msp
+    AnchorPeers:
+      - Host: peer0.events.example.com
+        Port: 7051
+    Policies: &EventsPolicies
+      Readers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.peer', 'AcmeMSP.client')"
+        Rule: "OR('EventsMSP.member')"
+      Writers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.client')"
+        Rule: "OR('EventsMSP.member')"
+      Admins:
+        Type: Signature
+        # UPDATE: Dec 15, 2019 - This is a dev env so its OK in Prod ... use AcmeMSP.admin
+        Rule: "OR('EventsMSP.member')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('EventsMSP.member')"
+
+  - &Promotion
+    Name: PromotionMSP
+    ID: PromotionMSP
+    MSPDir: ./crypto-config/peerOrganizations/promotion.example.com/msp
+    AnchorPeers:
+      - Host: peer0.promotion.example.com
+        Port: 7051
+    Policies: &PromotionPolicies
+      Readers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.peer', 'AcmeMSP.client')"
+        Rule: "OR('PromotionMSP.member')"
+      Writers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.client')"
+        Rule: "OR('PromotionMSP.member')"
+      Admins:
+        Type: Signature
+        # UPDATE: Dec 15, 2019 - This is a dev env so its OK in Prod ... use AcmeMSP.admin
+        Rule: "OR('PromotionMSP.member')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('PromotionMSP.member')"
+
+  - &Registeration
+    Name: RegisterationMSP
+    ID: RegisterationMSP
+    MSPDir: ./crypto-config/peerOrganizations/registeration.example.com/msp
+    AnchorPeers:
+      - Host: peer0.registeration.example.com
+        Port: 7051
+    Policies: &RegisterationPolicies
+      Readers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.peer', 'AcmeMSP.client')"
+        Rule: "OR('RegisterationMSP.member')"
+      Writers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.client')"
+        Rule: "OR('RegisterationMSP.member')"
+      Admins:
+        Type: Signature
+        # UPDATE: Dec 15, 2019 - This is a dev env so its OK in Prod ... use AcmeMSP.admin
+        Rule: "OR('RegisterationMSP.member')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('RegisterationMSP.member')"
+
+  - &Sports
+    Name: SportsMSP
+    ID: SportsMSP
+    MSPDir: ./crypto-config/peerOrganizations/sports.example.com/msp
+    AnchorPeers:
+      - Host: peer0.sports.example.com
+        Port: 7051
+    Policies: &SportsPolicies
+      Readers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.peer', 'AcmeMSP.client')"
+        Rule: "OR('SportsMSP.member')"
+      Writers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.client')"
+        Rule: "OR('SportsMSP.member')"
+      Admins:
+        Type: Signature
+        # UPDATE: Dec 15, 2019 - This is a dev env so its OK in Prod ... use AcmeMSP.admin
+        Rule: "OR('SportsMSP.member')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('SportsMSP.member')"
+
+  - &SportsFemale
+    Name: SportsFemaleMSP
+    ID: SportsFemaleMSP
+    MSPDir: ./crypto-config/peerOrganizations/sportsfemale.example.com/msp
+    AnchorPeers:
+      - Host: peer0.sportsfemale.example.com
+        Port: 7051
+    Policies: &SportsFemalePolicies
+      Readers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.peer', 'AcmeMSP.client')"
+        Rule: "OR('SportsFemaleMSP.member')"
+      Writers:
+        Type: Signature
+        #   Rule: "OR('AcmeMSP.admin', 'AcmeMSP.client')"
+        Rule: "OR('SportsFemaleMSP.member')"
+      Admins:
+        Type: Signature
+        # UPDATE: Dec 15, 2019 - This is a dev env so its OK in Prod ... use AcmeMSP.admin
+        Rule: "OR('SportsFemaleMSP.member')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('SportsFemaleMSP.member')"
+
+Orderer: &OrdererDefaults
+  OrdererType: solo
+
+  Addresses:
+    - orderer.example.com:7050
+
+  # Policies for Orderer
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      # UPDATED December 15, 2019
+      Rule: "ANY Admins"
+      # Rule: "MAJORITY Admins"
+
+    # BlockValidation specifies what signatures must be included in the block
+    # from the orderer for the peer to validate it.
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+  # Batch Timeout: The amount of time to wait before creating a batch
+  BatchTimeout: 2s
+
+  # Batch Size: Controls the number of messages batched into a block
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 98 MB
+    PreferredMaxBytes: 512 KB
+
+  Capabilities:
+    <<: *OrdererCapabilities
+
+Application: &ApplicationDefaults # Default policies
+  Policies: &ApplicationDefaultPolicies # approveformyorg
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      # Rule: "MAJORITY Endorsement"
+      Rule: "ANY Endorsement"
+
+    # --channel-config-policy
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+  Organizations:
+
+#   CHANNEL
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+# Application configuration
+Profiles:
+  EVotingGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - <<: *OrdererOrg
+    Consortiums:
+      AirlineConsortium:
+        Organizations:
+          - <<: *Events
+          - <<: *Promotion
+          - <<: *Registeration
+          - <<: *Sports
+          - <<: *SportsFemale
+
+  EVotingChannel:
+    <<: *ChannelDefaults
+    Consortium: EvotingConsortium
+
+    Application:
+      <<: *ApplicationDefaults
+
+      Organizations:
+        - <<: *Events
+        - <<: *Promotion
+        - <<: *Registeration
+        - <<: *Sports
+        - <<: *SportsFemale
