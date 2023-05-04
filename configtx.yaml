@@ -221,21 +221,6 @@ Channel: &ChannelDefaults
 
 # Application configuration
 Profiles:
-  EVotingGenesis:
-    <<: *ChannelDefaults
-    Orderer:
-      <<: *OrdererDefaults
-      Organizations:
-        - <<: *OrdererOrg
-    Consortiums:
-      AirlineConsortium:
-        Organizations:
-          - <<: *Events
-          - <<: *Promotion
-          - <<: *Registeration
-          - <<: *Sports
-          - <<: *SportsFemale
-
   EVotingChannel:
     <<: *ChannelDefaults
     Consortium: EvotingConsortium
@@ -249,3 +234,17 @@ Profiles:
         - <<: *Registeration
         - <<: *Sports
         - <<: *SportsFemale
+  EVotingGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - <<: *OrdererOrg
+    Consortiums:
+      EvotingConsortium:
+        Organizations:
+          - <<: *Events
+          - <<: *Promotion
+          - <<: *Registeration
+          - <<: *Sports
+          - <<: *SportsFemale

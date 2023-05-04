@@ -1,0 +1,10 @@
+peer channel create -o orderer.example.com:7050 -f /etc/hyperledger/configtx/evoting.tx -c evoting
+peer channel join -b evoting.block
+peer lifecycle chaincode install vote_chaincode.tar.gz
+
+apt update
+apt install -y curl
+curl -fsSL https://deb.nodesource.com/setup_16.x | bash - &&\
+apt-get install -y nodejs
+peer lifecycle chaincode package vote_chaincode.tar.gz --path . --lang node --label vote_chaincode_1.0.0
+peer lifecycle chaincode install vote_chaincode.tar.gz

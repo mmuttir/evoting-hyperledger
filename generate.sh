@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# Install required tools (cryptogen and configtxgen)
-apt-get update
-apt-get -y install curl
-curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/bootstrap.sh | bash -s -- 2.3.3 1.5.0
 
 # Generate certificates and artifacts
-./bin/
-export FABRIC_CFG_PATH=$PWD
-./bin/configtxgen -profile EVotingOrdererGenesis -channelID evoting-sys-channel -outputBlock ./genesis.block
-configtxgen -profile EVotingChannel -channelID evoting -outputCreateChannelTx ./evoting.tx
-configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate ./eventsanchors.tx -asOrg Events
-configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate ./promotionanchors.tx -asOrg Promotion
-configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate ./registerationanchors.tx -asOrg Registeration
-configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate ./sportsanchors.tx -asOrg Sports
-configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate ./sports_femaleanchors.tx -asOrg Sports_female
+
+export FABRIC_CFG_PATH=/fabric/
+configtxgen -profile EVotingGenesis -channelID evoting-sys-channel -outputBlock /fabric/channel-artifacts/genesis.block
+configtxgen -profile EVotingChannel -channelID evoting -outputCreateChannelTx /fabric/channel-artifacts/evoting.tx
+configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate /fabric/channel-artifacts/eventsanchors.tx -asOrg EventsMSP
+configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate /fabric/channel-artifacts/promotionanchors.tx -asOrg PromotionMSP
+configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate /fabric/channel-artifacts/registerationanchors.tx -asOrg RegisterationMSP
+configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate /fabric/channel-artifacts/sportsanchors.tx -asOrg SportsMSP
+configtxgen -profile EVotingChannel -channelID evoting -outputAnchorPeersUpdate /fabric/channel-artifacts/sports_femaleanchors.tx -asOrg SportsFemaleMSP

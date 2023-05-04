@@ -1,24 +1,25 @@
 version: "2"
 
 services:
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - 9090:9090
+  # prometheus:
+  #   image: prom/prometheus
+  #   ports:
+  #     - 9090:9090
 
-  grafana:
-    image: grafana/grafana
-    ports:
-      - 3000:3000
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=password
-    volumes:
-      - ./grafana-storage:/var/lib/grafana
-      - ./grafana/dashboards:/etc/grafana/dashboards
+  # grafana:
+  #   image: grafana/grafana
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=password
+  #   volumes:
+  #     - ./grafana-storage:/var/lib/grafana
+  #     - ./grafana/dashboards:/etc/grafana/dashboards
   orderer.example.com:
     container_name: orderer.example.com
     image: hyperledger/fabric-orderer
     environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/fabric/orderer_config
       - ORDERER_GENERAL_LOGLEVEL=debug
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_LISTENPORT=7050
@@ -26,7 +27,6 @@ services:
       - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
-      - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/msp/orderer/tls/server.key
       - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/msp/orderer/tls/server.crt
       - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/msp/orderer/tls/ca.crt]
@@ -44,7 +44,8 @@ services:
       - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/:/etc/hyperledger/msp/orderer
       - ./crypto-config/peerOrganizations/:/etc/hyperledger/msp/peers
       - ./crypto-config/peerOrganizations/:/etc/hyperledger/fabric/users
-      - ./crypto-config/peerOrganizations/:/etc/hyperledger/fabric/users/Admin@example.com/msp
+      - ./crypto-config/peerOrganizations/:/etc/hyperledger/fabric/users/Admin@example.com/msp'
+      - ./orderer_config/:/etc/hyperledger/fabric/orderer_config
     ports:
       - "7050:7050"
       - "7051:7051"
@@ -53,7 +54,10 @@ services:
   peer0.events.example.com:
     container_name: peer0.events.example.com
     image: hyperledger/fabric-peer
+    working_dir: /opt/gopath/src/github.com/vote
     environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/fabric/peer_config
+      - CORE_PEER_LOCALMSPID=EventsMSP
       - CORE_PEER_ID=peer0.events.example.com
       - CORE_PEER_ADDRESS=peer0.events.example.com:7051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
@@ -62,19 +66,15 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.events.example.com:7051
       - CORE_PEER_GOSSIP_ENDPOINT=peer1.events.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.events.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=EventsMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=INFO
-      - CORE_METRICS_PROVIDER=prometheus
-      - CORE_PEER_METRICS_PROVIDER=prometheus
-      - CORE_PEER_METRICS_LISTENADDRESS=prometheus:9090
-      
+      - CORE_VM_ENDPOINT=tcp://localhost:2375
     volumes:
-      - ./crypto-config/peerOrganizations/events.example.com/peers/peer0.events.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/events.example.com/users/Admin@events.example.com/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/events.example.com/peers/peer0.events.example.com/tls:/etc/hyperledger/fabric/tls
+      - ./crypto-config/peerOrganizations/events.example.com/users/Admin@events.example.com/tls:/etc/hyperledger/fabric/client_tls
+      - ./peer_config:/etc/hyperledger/fabric/peer_config
       - ./crypto-config/peerOrganizations/events.example.com/users:/etc/hyperledger/fabric/users
+      - ./chaincode/:/opt/gopath/src/github.com/vote
+      - ./channel-artifacts:/etc/hyperledger/configtx
     ports:
       - "7052:7051"
       - "7053:7052"
@@ -83,225 +83,228 @@ services:
   peer1.events.example.com:
     container_name: peer1.events.example.com
     image: hyperledger/fabric-peer
+    working_dir: /opt/gopath/src/github.com/vote
     environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/fabric/peer_config
+      - CORE_PEER_LOCALMSPID=EventsMSP
       - CORE_PEER_ID=peer1.events.example.com
-      - CORE_PEER_ADDRESS=peer1.events.example.com:7051
+      - CORE_PEER_ADDRESS=peer0.events.example.com:7051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer1.events.example.com:7052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.events.example.com:7051
       - CORE_PEER_GOSSIP_ENDPOINT=peer0.events.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.events.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=EventsMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_VM_ENDPOINT=tcp://0.0.0.0:2375
     volumes:
-      - ./crypto-config/peerOrganizations/events.example.com/peers/peer1.events.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/events.example.com/users/User1@events.example.com/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/events.example.com/peers/peer1.events.example.com/tls:/etc/hyperledger/fabric/tls
+      - ./crypto-config/peerOrganizations/events.example.com/users/User1@events.example.com/tls:/etc/hyperledger/fabric/client_tls
+      - ./peer_config:/etc/hyperledger/fabric/peer_config
       - ./crypto-config/peerOrganizations/events.example.com/users:/etc/hyperledger/fabric/users
+      - ./chaincode/:/opt/gopath/src/github.com/vote
+      - ./channel-artifacts:/etc/hyperledger/configtx
     ports:
       - "7054:7051"
       - "7055:7052"
     command: peer node start
 
-  peer0.promotion.example.com:
-    container_name: peer0.promotion.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_PEER_ID=peer0.promotion.example.com
-      - CORE_PEER_ADDRESS=peer0.promotion.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.promotion.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.promotion.example.com:7051
-      - CORE_PEER_GOSSIP_ENDPOINT=peer1.promotion.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.promotion.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=PromotionMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
-    volumes:
-      - ./crypto-config/peerOrganizations/promotion.example.com/peers/peer0.promotion.example.com/:/etc/hyperledger/fabric/msp
-      - ./crypto-config/peerOrganizations/promotion.example.com/users:/etc/hyperledger/fabric/users
-    ports:
-      - "7056:7051"
-      - "7057:7052"
-    command: peer node start
+  # peer0.promotion.example.com:
+  #   container_name: peer0.promotion.example.com
+  #   image: hyperledger/fabric-peer
+  #   environment:
+  #     - CORE_PEER_ID=peer0.promotion.example.com
+  #     - CORE_PEER_ADDRESS=peer0.promotion.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer0.promotion.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.promotion.example.com:7051
+  #     - CORE_PEER_GOSSIP_ENDPOINT=peer1.promotion.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.promotion.example.com:7051
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=true
+  #     - CORE_PEER_GOSSIP_ORGLEADER=false
+  #     - CORE_PEER_LOCALMSPID=PromotionMSP
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
+  #     - CORE_LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/promotion.example.com/peers/peer0.promotion.example.com/:/etc/hyperledger/fabric/msp
+  #     - ./crypto-config/peerOrganizations/promotion.example.com/users:/etc/hyperledger/fabric/users
+  #   ports:
+  #     - "7056:7051"
+  #     - "7057:7052"
+  #   command: peer node start
 
-  peer1.promotion.example.com:
-    container_name: peer1.promotion.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_PEER_ID=peer1.promotion.example.com
-      - CORE_PEER_ADDRESS=peer1.promotion.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer1.promotion.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.promotion.example.com:7051
-      - CORE_PEER_GOSSIP_ENDPOINT=peer0.promotion.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.promotion.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=PromotionMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
-    volumes:
-      - ./crypto-config/peerOrganizations/promotion.example.com/peers/peer1.promotion.example.com/:/etc/hyperledger/fabric/msp
-      - ./crypto-config/peerOrganizations/promotion.example.com/users:/etc/hyperledger/fabric/users
-    ports:
-      - "7058:7051"
-      - "7059:7052"
-    command: peer node start
+  # peer1.promotion.example.com:
+  #   container_name: peer1.promotion.example.com
+  #   image: hyperledger/fabric-peer
+  #   environment:
+  #     - CORE_PEER_ID=peer1.promotion.example.com
+  #     - CORE_PEER_ADDRESS=peer1.promotion.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer1.promotion.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.promotion.example.com:7051
+  #     - CORE_PEER_GOSSIP_ENDPOINT=peer0.promotion.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.promotion.example.com:7051
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=true
+  #     - CORE_PEER_GOSSIP_ORGLEADER=false
+  #     - CORE_PEER_LOCALMSPID=PromotionMSP
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
+  #     - CORE_LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/promotion.example.com/peers/peer1.promotion.example.com/:/etc/hyperledger/fabric/msp
+  #     - ./crypto-config/peerOrganizations/promotion.example.com/users:/etc/hyperledger/fabric/users
+  #   ports:
+  #     - "7058:7051"
+  #     - "7059:7052"
+  #   command: peer node start
 
-  peer0.registeration.example.com:
-    container_name: peer0.registeration.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_PEER_ID=peer0.registeration.example.com
-      - CORE_PEER_ADDRESS=peer0.registeration.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.registeration.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.registeration.example.com:7051
-      - CORE_PEER_GOSSIP_ENDPOINT=peer1.registeration.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.registeration.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=RegisterationMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
-    volumes:
-      - ./crypto-config/peerOrganizations/registeration.example.com/peers/peer0.registeration.example.com/:/etc/hyperledger/fabric/msp
-      - ./crypto-config/peerOrganizations/registeration.example.com/users:/etc/hyperledger/fabric/users
-    ports:
-      - "7060:7051"
-      - "7061:7052"
-    command: peer node start
+  # peer0.registeration.example.com:
+  #   container_name: peer0.registeration.example.com
+  #   image: hyperledger/fabric-peer
+  #   environment:
+  #     - CORE_PEER_ID=peer0.registeration.example.com
+  #     - CORE_PEER_ADDRESS=peer0.registeration.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer0.registeration.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.registeration.example.com:7051
+  #     - CORE_PEER_GOSSIP_ENDPOINT=peer1.registeration.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.registeration.example.com:7051
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=true
+  #     - CORE_PEER_GOSSIP_ORGLEADER=false
+  #     - CORE_PEER_LOCALMSPID=RegisterationMSP
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
+  #     - CORE_LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/registeration.example.com/peers/peer0.registeration.example.com/:/etc/hyperledger/fabric/msp
+  #     - ./crypto-config/peerOrganizations/registeration.example.com/users:/etc/hyperledger/fabric/users
+  #   ports:
+  #     - "7060:7051"
+  #     - "7061:7052"
+  #   command: peer node start
 
-  peer1.registeration.example.com:
-    container_name: peer1.registeration.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_PEER_ID=peer1.registeration.example.com
-      - CORE_PEER_ADDRESS=peer1.registeration.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer1.registeration.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.registeration.example.com:7051
-      - CORE_PEER_GOSSIP_ENDPOINT=peer0.registeration.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.registeration.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=RegisterationMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
-    volumes:
-      - ./crypto-config/peerOrganizations/registeration.example.com/peers/peer1.registeration.example.com/:/etc/hyperledger/fabric/msp
-      - ./crypto-config/peerOrganizations/registeration.example.com/users:/etc/hyperledger/fabric/users
-    ports:
-      - "7062:7051"
-      - "7063:7052"
-    command: peer node start
+  # peer1.registeration.example.com:
+  #   container_name: peer1.registeration.example.com
+  #   image: hyperledger/fabric-peer
+  #   environment:
+  #     - CORE_PEER_ID=peer1.registeration.example.com
+  #     - CORE_PEER_ADDRESS=peer1.registeration.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer1.registeration.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.registeration.example.com:7051
+  #     - CORE_PEER_GOSSIP_ENDPOINT=peer0.registeration.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.registeration.example.com:7051
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=true
+  #     - CORE_PEER_GOSSIP_ORGLEADER=false
+  #     - CORE_PEER_LOCALMSPID=RegisterationMSP
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
+  #     - CORE_LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/registeration.example.com/peers/peer1.registeration.example.com/:/etc/hyperledger/fabric/msp
+  #     - ./crypto-config/peerOrganizations/registeration.example.com/users:/etc/hyperledger/fabric/users
+  #   ports:
+  #     - "7062:7051"
+  #     - "7063:7052"
+  #   command: peer node start
 
-  peer0.sports.example.com:
-    container_name: peer0.sports.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_PEER_ID=peer0.sports.example.com
-      - CORE_PEER_ADDRESS=peer0.sports.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.sports.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.sports.example.com:7051
-      - CORE_PEER_GOSSIP_ENDPOINT=peer1.sports.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sports.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=SportsMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
-    volumes:
-      - ./crypto-config/peerOrganizations/sports.example.com/peers/peer0.sports.example.com/:/etc/hyperledger/fabric/msp
-      - ./crypto-config/peerOrganizations/sports.example.com/users:/etc/hyperledger/fabric/users
-    ports:
-      - "7064:7051"
-      - "7065:7052"
-    command: peer node start
+  # peer0.sports.example.com:
+  #   container_name: peer0.sports.example.com
+  #   image: hyperledger/fabric-peer
+  #   environment:
+  #     - CORE_PEER_ID=peer0.sports.example.com
+  #     - CORE_PEER_ADDRESS=peer0.sports.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer0.sports.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.sports.example.com:7051
+  #     - CORE_PEER_GOSSIP_ENDPOINT=peer1.sports.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sports.example.com:7051
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=true
+  #     - CORE_PEER_GOSSIP_ORGLEADER=false
+  #     - CORE_PEER_LOCALMSPID=SportsMSP
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
+  #     - CORE_LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/sports.example.com/peers/peer0.sports.example.com/:/etc/hyperledger/fabric/msp
+  #     - ./crypto-config/peerOrganizations/sports.example.com/users:/etc/hyperledger/fabric/users
+  #   ports:
+  #     - "7064:7051"
+  #     - "7065:7052"
+  #   command: peer node start
 
-  peer1.sports.example.com:
-    container_name: peer1.sports.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_PEER_ID=peer1.sports.example.com
-      - CORE_PEER_ADDRESS=peer1.sports.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer1.sports.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sports.example.com:7051
-      - CORE_PEER_GOSSIP_ENDPOINT=peer0.sports.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.sports.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=SportsMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
-    volumes:
-      - ./crypto-config/peerOrganizations/sports.example.com/peers/peer1.sports.example.com/:/etc/hyperledger/fabric/msp
-      - ./crypto-config/peerOrganizations/sports.example.com/users:/etc/hyperledger/fabric/users
-    ports:
-      - "7066:7051"
-      - "7067:7052"
-    command: peer node start
+  # peer1.sports.example.com:
+  #   container_name: peer1.sports.example.com
+  #   image: hyperledger/fabric-peer
+  #   environment:
+  #     - CORE_PEER_ID=peer1.sports.example.com
+  #     - CORE_PEER_ADDRESS=peer1.sports.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer1.sports.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sports.example.com:7051
+  #     - CORE_PEER_GOSSIP_ENDPOINT=peer0.sports.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.sports.example.com:7051
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=true
+  #     - CORE_PEER_GOSSIP_ORGLEADER=false
+  #     - CORE_PEER_LOCALMSPID=SportsMSP
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
+  #     - CORE_LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/sports.example.com/peers/peer1.sports.example.com/:/etc/hyperledger/fabric/msp
+  #     - ./crypto-config/peerOrganizations/sports.example.com/users:/etc/hyperledger/fabric/users
+  #   ports:
+  #     - "7066:7051"
+  #     - "7067:7052"
+  #   command: peer node start
 
-  peer0.sportsfemale.example.com:
-    container_name: peer0.sportsfemale.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_PEER_ID=peer0.sportsfemale.example.com
-      - CORE_PEER_ADDRESS=peer0.sportsfemale.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.sportsfemale.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.sportsfemale.example.com:7051
-      - CORE_PEER_GOSSIP_ENDPOINT=peer1.sportsfemale.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sportsfemale.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=SportsFemaleMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
-    volumes:
-      - ./crypto-config/peerOrganizations/sportsfemale.example.com/peers/peer0.sportsfemale.example.com/:/etc/hyperledger/fabric/msp
-      - ./crypto-config/peerOrganizations/sportsfemale.example.com/users:/etc/hyperledger/fabric/users
-    ports:
-      - "7068:7051"
-      - "7069:7052"
-    command: peer node start
+  # peer0.sportsfemale.example.com:
+  #   container_name: peer0.sportsfemale.example.com
+  #   image: hyperledger/fabric-peer
+  #   environment:
+  #     - CORE_PEER_ID=peer0.sportsfemale.example.com
+  #     - CORE_PEER_ADDRESS=peer0.sportsfemale.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer0.sportsfemale.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.sportsfemale.example.com:7051
+  #     - CORE_PEER_GOSSIP_ENDPOINT=peer1.sportsfemale.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sportsfemale.example.com:7051
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=true
+  #     - CORE_PEER_GOSSIP_ORGLEADER=false
+  #     - CORE_PEER_LOCALMSPID=SportsFemaleMSP
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
+  #     - CORE_LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/sportsfemale.example.com/peers/peer0.sportsfemale.example.com/:/etc/hyperledger/fabric/msp
+  #     - ./crypto-config/peerOrganizations/sportsfemale.example.com/users:/etc/hyperledger/fabric/users
+  #   ports:
+  #     - "7068:7051"
+  #     - "7069:7052"
+  #   command: peer node start
 
-  peer1.sportsfemale.example.com:
-    container_name: peer1.sportsfemale.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_PEER_ID=peer1.sportsfemale.example.com
-      - CORE_PEER_ADDRESS=peer1.sportsfemale.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer1.sportsfemale.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sportsfemale.example.com:7051
-      - CORE_PEER_GOSSIP_ENDPOINT=peer0.sportsfemale.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.sportsfemale.example.com:7051
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_LOCALMSPID=SportsFemaleMSP
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
-      - CORE_LOGGING_LEVEL=DEBUG
-    volumes:
-      - ./crypto-config/peerOrganizations/sportsfemale.example.com/peers/peer1.sportsfemale.example.com/:/etc/hyperledger/fabric/msp
-      - ./crypto-config/peerOrganizations/sportsfemale.example.com/users:/etc/hyperledger/fabric/users
-    ports:
-      - "7070:7051"
-      - "7071:7052"
-    command: peer node start
+  # peer1.sportsfemale.example.com:
+  #   container_name: peer1.sportsfemale.example.com
+  #   image: hyperledger/fabric-peer
+  #   environment:
+  #     - CORE_PEER_ID=peer1.sportsfemale.example.com
+  #     - CORE_PEER_ADDRESS=peer1.sportsfemale.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer1.sportsfemale.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sportsfemale.example.com:7051
+  #     - CORE_PEER_GOSSIP_ENDPOINT=peer0.sportsfemale.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.sportsfemale.example.com:7051
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=true
+  #     - CORE_PEER_GOSSIP_ORGLEADER=false
+  #     - CORE_PEER_LOCALMSPID=SportsFemaleMSP
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger
+  #     - CORE_LOGGING_LEVEL=DEBUG
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/sportsfemale.example.com/peers/peer1.sportsfemale.example.com/:/etc/hyperledger/fabric/msp
+  #     - ./crypto-config/peerOrganizations/sportsfemale.example.com/users:/etc/hyperledger/fabric/users
+  #   ports:
+  #     - "7070:7051"
+  #     - "7071:7052"
+  #   command: peer node start
