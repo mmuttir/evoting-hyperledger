@@ -1,10 +1,18 @@
-peer channel create -o orderer.example.com:7050 -f /etc/hyperledger/configtx/evoting.tx -c evoting
-peer channel join -b evoting.block
-peer lifecycle chaincode install vote_chaincode.tar.gz
 
-apt update
-apt install -y curl
-curl -fsSL https://deb.nodesource.com/setup_16.x | bash - &&\
-apt-get install -y nodejs
-peer lifecycle chaincode package vote_chaincode.tar.gz --path . --lang node --label vote_chaincode_1.0.0
-peer lifecycle chaincode install vote_chaincode.tar.gz
+
+export FABRIC_CFG_PATH=/var/hyperledger/config/peer
+export CORE_PEER_LOCALMSPID=EventsMSP
+export CORE_PEER_ADDRESS="peer0.events.example.com:7051"
+export CORE_PEER_MSPCONFIGPATH="/var/hyperledger/config/crypto-config/peerOrganizations/events.example.com/users/Admin@events.example.com/msp"
+peer lifecycle chaincode package mychaincode.tar.gz --path /opt/nodechaincode --lang node --label vote_1.0.0
+peer lifecycle chaincode install mychaincode.tar.gz
+peer lifecycle chaincode queryinstalled
+peer lifecycle chaincode approveformyorg --channelID evoting --name mychaincode --version 1.0 --init-required --package-id vote_1.0.0:c960d493bd6308e5ebeccf9d9d662f19f124bb77ef4633c99f296397031b458f --sequence 1 --waitForEvent
+peer lifecycle chaincode commit -o orderer.example.com:7050 --channelID evoting --name mychaincode --version 1.0 --sequence 1 --init-required --waitForEvent
+peer chaincode invoke -o orderer.example.com:7050 --channelID evoting --name mychaincode --isInit -c '{"Args":["initLedger"]}'
+
+
+export FABRIC_CFG_PATH=/var/hyperledger/config/peer
+export CORE_PEER_LOCALMSPID=PromotionMSP
+export CORE_PEER_ADDRESS="peer0.promotion.example.com:7051"
+export CORE_PEER_MSPCONFIGPATH="/var/hyperledger/config/crypto-config/peerOrganizations/promotion.example.com/users/Admin@promotion.example.com/msp"
