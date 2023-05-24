@@ -23,7 +23,7 @@ peer:
   # The endpoint this peer uses to listen for inbound chaincode connections.
   # If this is commented-out, the listen address is selected to be
   # the peer's address (see below) with port 7052
-  # chaincodeListenAddress: 0.0.0.0:7052
+  chaincodeListenAddress: 0.0.0.0:7052
 
   # The endpoint the chaincode for this peer uses to connect to the peer.
   # If this is not specified, the chaincodeListenAddress address is selected.
@@ -397,8 +397,8 @@ vm:
   # unix:///var/run/docker.sock
   # http://localhost:2375
   # https://localhost:2376
-  # endpoint: unix:///var/run/docker.sock
-  endpoint: tcp://172.17.0.1:2375
+  endpoint: unix:///var/run/docker.sock
+  # endpoint: tcp://172.17.0.1:2375
 
   # settings for docker vms
   docker:

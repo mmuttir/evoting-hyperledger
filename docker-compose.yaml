@@ -42,11 +42,8 @@ services:
       - CORE_PEER_LOCALMSPID=EventsMSP
       - CORE_PEER_ID=peer0.events.example.com
       - CORE_PEER_ADDRESS=peer0.events.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer0.events.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.events.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer1.events.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.events.example.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
     volumes:
@@ -74,11 +71,8 @@ services:
       - CORE_PEER_LOCALMSPID=EventsMSP
       - CORE_PEER_ID=peer1.events.example.com
       - CORE_PEER_ADDRESS=peer1.events.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer1.events.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.events.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer0.events.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.events.example.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
     volumes:
@@ -102,11 +96,8 @@ services:
       - FABRIC_CFG_PATH=/var/hyperledger/config
       - CORE_PEER_ID=peer0.promotion.example.com
       - CORE_PEER_ADDRESS=peer0.promotion.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer0.promotion.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.promotion.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer1.promotion.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.promotion.example.com:7051
       - CORE_PEER_LOCALMSPID=PromotionMSP
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
@@ -129,11 +120,8 @@ services:
       - FABRIC_CFG_PATH=/var/hyperledger/config
       - CORE_PEER_ID=peer1.promotion.example.com
       - CORE_PEER_ADDRESS=peer1.promotion.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer1.promotion.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.promotion.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer0.promotion.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.promotion.example.com:7051
       - CORE_PEER_LOCALMSPID=PromotionMSP
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
@@ -156,11 +144,8 @@ services:
       - FABRIC_CFG_PATH=/var/hyperledger/config
       - CORE_PEER_ID=peer0.registeration.example.com
       - CORE_PEER_ADDRESS=peer0.registeration.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer0.registeration.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.registeration.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer1.registeration.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.registeration.example.com:7051
       - CORE_PEER_LOCALMSPID=RegisterationMSP
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
@@ -183,11 +168,8 @@ services:
       - FABRIC_CFG_PATH=/var/hyperledger/config
       - CORE_PEER_ID=peer1.registeration.example.com
       - CORE_PEER_ADDRESS=peer1.registeration.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer1.registeration.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.registeration.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer0.registeration.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.registeration.example.com:7051
       - CORE_PEER_LOCALMSPID=RegisterationMSP
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
@@ -210,11 +192,8 @@ services:
       - FABRIC_CFG_PATH=/var/hyperledger/config
       - CORE_PEER_ID=peer0.sports.example.com
       - CORE_PEER_ADDRESS=peer0.sports.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer0.sports.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.sports.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer1.sports.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sports.example.com:7051
       - CORE_PEER_LOCALMSPID=SportsMSP
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
@@ -237,11 +216,8 @@ services:
       - FABRIC_CFG_PATH=/var/hyperledger/config
       - CORE_PEER_ID=peer1.sports.example.com
       - CORE_PEER_ADDRESS=peer1.sports.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer1.sports.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sports.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer1.sports.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.sports.example.com:7051
       - CORE_PEER_LOCALMSPID=SportsMSP
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
@@ -264,11 +240,8 @@ services:
       - FABRIC_CFG_PATH=/var/hyperledger/config
       - CORE_PEER_ID=peer0.sportsfemale.example.com
       - CORE_PEER_ADDRESS=peer0.sportsfemale.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer0.sportsfemale.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.sportsfemale.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer1.sportsfemale.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sportsfemale.example.com:7051
       - CORE_PEER_LOCALMSPID=SportsFemaleMSP
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting
@@ -291,11 +264,8 @@ services:
       - FABRIC_CFG_PATH=/var/hyperledger/config
       - CORE_PEER_ID=peer1.sportsfemale.example.com
       - CORE_PEER_ADDRESS=peer1.sportsfemale.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer1.sportsfemale.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sportsfemale.example.com:7051
-      # - CORE_PEER_GOSSIP_ENDPOINT=peer0.sportsfemale.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.sportsfemale.example.com:7051
       - CORE_PEER_LOCALMSPID=SportsFemaleMSP
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_voting

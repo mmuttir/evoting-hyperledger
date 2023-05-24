@@ -1,0 +1,106 @@
+# YAML for launching the orderer
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: peer0_events
+  labels:
+    app: peer0_events
+spec:
+  serviceName: peer0_events
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer0_events
+  template:
+    metadata:
+      labels:
+        app: peer0_events
+    spec:
+      containers:
+        - name: peer0_events
+          # Image used
+          image: peer0_events
+          # Uncomment the following during development/testing of the image
+          # imagePullPolicy: Always
+          env:
+            - name: FABRIC_CFG_PATH
+              value: /var/hyperledger/config
+            - name: CORE_PEER_LOCALMSPID
+              value: EventsMSP
+            - name: CORE_PEER_ID
+              value: peer0.events.example.com
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+            - name: ORDERER_ADDRESS
+              value: orderer:7050
+            - name: ORG_CONTEXT
+              value: events
+            - name: CORE_PEER_ADDRESS
+              value: localhost:7051
+          volumeMounts:
+            - name: events-peer-ledger
+              mountPath: /var/ledger
+            - name: dockersock
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+  volumeClaimTemplates:
+    - metadata:
+        name: events-peer-ledger
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: general
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+# Expose the port 7051 as ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  name: events-peer-clusterip
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: events-peer
+
+  ports:
+    - name: events-peer-clusterip
+      port: 7051
+    - name: events-peer-cc-clusterip
+      port: 7052
+
+  type: ClusterIP
+
+---
+# Expose the port 7051 as node port -  NEEDED if you
+# are interested in connecting to the Pods from the Host
+# machine - keep in mind you would need the IP for the node
+# port service
+apiVersion: v1
+kind: Service
+metadata:
+  name: events-peer-nodeport
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: events-peer
+
+  ports:
+    - name: events-peer-nodeport-751
+      port: 7051
+      nodePort: 7051
+    - name: events-peer-cc-nodeport-752
+      port: 7052
+      nodePort: 7052
+
+  type: NodePort
