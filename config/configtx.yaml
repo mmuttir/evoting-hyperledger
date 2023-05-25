@@ -31,8 +31,8 @@ Organizations:
     ID: EventsMSP
     MSPDir: ./crypto-config/peerOrganizations/events.example.com/msp
     AnchorPeers:
-      - Host: peer0.events.example.com
-        Port: 7051
+      - Host: peer0-events-clusterip
+        Port: 30751
     Policies: &EventsPolicies
       Readers:
         Type: Signature
@@ -55,8 +55,8 @@ Organizations:
     ID: PromotionMSP
     MSPDir: ./crypto-config/peerOrganizations/promotion.example.com/msp
     AnchorPeers:
-      - Host: peer0.promotion.example.com
-        Port: 7051
+      - Host: peer0-promotion-clusterip
+        Port: 30951
     Policies: &PromotionPolicies
       Readers:
         Type: Signature
@@ -79,8 +79,8 @@ Organizations:
     ID: RegisterationMSP
     MSPDir: ./crypto-config/peerOrganizations/registeration.example.com/msp
     AnchorPeers:
-      - Host: peer0.registeration.example.com
-        Port: 7051
+      - Host: peer0-registeration-clusterip
+        Port: 31151
     Policies: &RegisterationPolicies
       Readers:
         Type: Signature
@@ -103,8 +103,8 @@ Organizations:
     ID: SportsMSP
     MSPDir: ./crypto-config/peerOrganizations/sports.example.com/msp
     AnchorPeers:
-      - Host: peer0.sports.example.com
-        Port: 7051
+      - Host: peer0-sports-clusterip
+        Port: 31351
     Policies: &SportsPolicies
       Readers:
         Type: Signature
@@ -127,8 +127,8 @@ Organizations:
     ID: SportsFemaleMSP
     MSPDir: ./crypto-config/peerOrganizations/sportsfemale.example.com/msp
     AnchorPeers:
-      - Host: peer0.sportsfemale.example.com
-        Port: 7051
+      - Host: peer0-sportsfemale-clusterip
+        Port: 31551
     Policies: &SportsFemalePolicies
       Readers:
         Type: Signature
@@ -150,7 +150,7 @@ Orderer: &OrdererDefaults
   OrdererType: solo
 
   Addresses:
-    - orderer.example.com:7050
+    - orderer-clusterip:30750
 
   # Policies for Orderer
   Policies:

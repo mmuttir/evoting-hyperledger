@@ -8,7 +8,7 @@ LABEL  maintainer="Muhammad Mutti Ur Rehman <mutti.rehman1122@gmail.com>"
 RUN mkdir -p /var/hyperledger/config
 
 #2. Copy the crypto for peer crypto
-COPY ./config/crypto-config/peerOrganizations/promotion.example.com/users/Admin@promotion.example.com/msp /var/hyperledger/msp
+COPY ./config/crypto-config/peerOrganizations/promotion.example.com/users/User1@promotion.example.com/msp /var/hyperledger/msp
 
 #3. Copy the anchor peer update tx
 COPY ./config/promotionanchors.tx /var/hyperledger/config/promotionanchors.tx
@@ -21,12 +21,6 @@ COPY ./config/peer/core.yaml /var/hyperledger/config/core.yaml
 
 #8. Copy the test chaincode
 COPY ./chaincode  /opt/nodechaincode
-
-#11. Install the jq package - used in scripts
-RUN apt update \
- && apt install -y jq \
- && rm -rf /var/cache/apt/*
-
 
 #12. Create the package folder
 RUN mkdir -p /var/hyperledger/packages

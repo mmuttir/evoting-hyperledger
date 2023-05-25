@@ -2,26 +2,26 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: peer1_events
+  name: peer1-events
   labels:
-    app: peer1_events
+    app: peer1-events
 spec:
-  serviceName: peer1_events
+  serviceName: peer1-events
   replicas: 1
   selector:
     matchLabels:
-      app: peer1_events
+      app: peer1-events
   template:
     metadata:
       labels:
-        app: peer1_events
+        app: peer1-events
     spec:
       containers:
-        - name: peer1_events
+        - name: peer1-events
           # Image used
-          image: peer1_events
+          image: mutti11/peer1_events
           # Uncomment the following during development/testing of the image
-          # imagePullPolicy: Always
+          imagePullPolicy: Always
           env:
             - name: FABRIC_CFG_PATH
               value: /var/hyperledger/config
@@ -32,13 +32,23 @@ spec:
             - name: FABRIC_LOGGING_SPEC
               value: INFO
             - name: ORDERER_ADDRESS
-              value: orderer:7050
+              value: orderer-clusterip:30750
             - name: ORG_CONTEXT
               value: events
             - name: CORE_PEER_ADDRESS
-              value: localhost:7051
+              value: peer1-events-clusterip:30851
+            - name: CORE_PEER_LISTENADDRESS
+              value: 0.0.0.0:30851
+            - name: CORE_PEER_CHAINCODEADDRESS
+              value: peer1-events-clusterip:30852
+            - name: CORE_PEER_GOSSIP_BOOTSTRAP
+              value: peer0-events-clusterip:30751
+            - name: CORE_PEER_GOSSIP_ENDPOINT
+              value: peer0-events-clusterip:30751
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: 0.0.0.0:30851
           volumeMounts:
-            - name: events-peer-ledger
+            - name: peer1-events-ledger
               mountPath: /var/ledger
             - name: dockersock
               mountPath: /var/run/docker.sock
@@ -48,7 +58,7 @@ spec:
             path: /var/run/docker.sock
   volumeClaimTemplates:
     - metadata:
-        name: events-peer-ledger
+        name: peer1-events-ledger
       spec:
         accessModes: ["ReadWriteOnce"]
         storageClassName: general
@@ -57,50 +67,50 @@ spec:
             storage: 1Gi
 
 ---
-# Expose the port 7051 as ClusterIP
+# Expose the port 30851 as ClusterIP
 apiVersion: v1
 kind: Service
 metadata:
-  name: events-peer-clusterip
+  name: peer1-events-clusterip
 
 spec:
   # This defines which pods are going to be represented by this Service
   # The service becomes a network endpoint for either other services
   # or maybe external users to connect to (eg browser)
   selector:
-    app: events-peer
+    app: peer1-events
 
   ports:
-    - name: events-peer-clusterip
-      port: 7051
-    - name: events-peer-cc-clusterip
-      port: 7052
+    - name: peer1-events-clusterip
+      port: 30851
+    - name: peer1-events-cc-clusterip
+      port: 30852
 
   type: ClusterIP
 
 ---
-# Expose the port 7051 as node port -  NEEDED if you
+# Expose the port 30851 as node port -  NEEDED if you
 # are interested in connecting to the Pods from the Host
 # machine - keep in mind you would need the IP for the node
 # port service
 apiVersion: v1
 kind: Service
 metadata:
-  name: events-peer-nodeport
+  name: peer1-events-nodeport
 
 spec:
   # This defines which pods are going to be represented by this Service
   # The service becomes a network endpoint for either other services
   # or maybe external users to connect to (eg browser)
   selector:
-    app: events-peer
+    app: peer1-events
 
   ports:
-    - name: events-peer-nodeport-751
-      port: 7051
-      nodePort: 7051
-    - name: events-peer-cc-nodeport-752
-      port: 7052
-      nodePort: 7052
+    - name: peer1-events-nodeport-751
+      port: 30851
+      nodePort: 30851
+    - name: peer1-events-cc-nodeport-752
+      port: 30852
+      nodePort: 30852
 
   type: NodePort

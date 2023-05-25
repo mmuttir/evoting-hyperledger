@@ -1,0 +1,116 @@
+# YAML for launching the orderer
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: peer0-registeration
+  labels:
+    app: peer0-registeration
+spec:
+  serviceName: peer0-registeration
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer0-registeration
+  template:
+    metadata:
+      labels:
+        app: peer0-registeration
+    spec:
+      containers:
+        - name: peer0-registeration
+          # Image used
+          image: mutti11/peer0_registeration
+          # Uncomment the following during development/testing of the image
+          imagePullPolicy: Always
+          env:
+            - name: FABRIC_CFG_PATH
+              value: /var/hyperledger/config
+            - name: CORE_PEER_LOCALMSPID
+              value: RegisterationMSP
+            - name: CORE_PEER_ID
+              value: peer0.registeration.example.com
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+            - name: ORDERER_ADDRESS
+              value: orderer-clusterip:30750
+            - name: ORG_CONTEXT
+              value: registeration
+            - name: CORE_PEER_ADDRESS
+              value: peer0-registeration-clusterip:31151
+            - name: CORE_PEER_LISTENADDRESS
+              value: 0.0.0.0:31151
+            - name: CORE_PEER_CHAINCODEADDRESS
+              value: peer0-registeration-clusterip:31152
+            - name: CORE_PEER_GOSSIP_BOOTSTRAP
+              value: peer1-registeration-clusterip:31251
+            - name: CORE_PEER_GOSSIP_ENDPOINT
+              value: peer1-registeration-clusterip:31251
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: 0.0.0.0:31151
+          volumeMounts:
+            - name: peer0-registeration-ledger
+              mountPath: /var/ledger
+            - name: dockersock
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+  volumeClaimTemplates:
+    - metadata:
+        name: peer0-registeration-ledger
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: general
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+# Expose the port 31151 as ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer0-registeration-clusterip
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: peer0-registeration
+
+  ports:
+    - name: peer0-registeration-clusterip
+      port: 31151
+    - name: peer0-registeration-cc-clusterip
+      port: 31152
+
+  type: ClusterIP
+
+---
+# Expose the port 31151 as node port -  NEEDED if you
+# are interested in connecting to the Pods from the Host
+# machine - keep in mind you would need the IP for the node
+# port service
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer0-registeration-nodeport
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: peer0-registeration
+
+  ports:
+    - name: peer0-registeration-nodeport-751
+      port: 31151
+      nodePort: 31151
+    - name: peer0-registeration-cc-nodeport-752
+      port: 31152
+      nodePort: 31152
+
+  type: NodePort

@@ -32,7 +32,7 @@ General:
   ListenAddress: 0.0.0.0
 
   # Listen port: The port on which to bind to listen.
-  ListenPort: 7050
+  ListenPort: 30750
 
   # Used orderer type = etcdraft
   Cluster:

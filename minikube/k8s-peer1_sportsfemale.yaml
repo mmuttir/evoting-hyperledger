@@ -1,0 +1,116 @@
+# YAML for launching the orderer
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: peer1-sportsfemale
+  labels:
+    app: peer1-sportsfemale
+spec:
+  serviceName: peer1-sportsfemale
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer1-sportsfemale
+  template:
+    metadata:
+      labels:
+        app: peer1-sportsfemale
+    spec:
+      containers:
+        - name: peer1-sportsfemale
+          # Image used
+          image: mutti11/peer1_sportsfemale
+          # Uncomment the following during development/testing of the image
+          imagePullPolicy: Always
+          env:
+            - name: FABRIC_CFG_PATH
+              value: /var/hyperledger/config
+            - name: CORE_PEER_LOCALMSPID
+              value: SportsFemaleMSP
+            - name: CORE_PEER_ID
+              value: peer1.sportsfemale.example.com
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+            - name: ORDERER_ADDRESS
+              value: orderer-clusterip:30750
+            - name: ORG_CONTEXT
+              value: sportsfemale
+            - name: CORE_PEER_ADDRESS
+              value: peer1-sportsfemale-clusterip:31651
+            - name: CORE_PEER_LISTENADDRESS
+              value: 0.0.0.0:31651
+            - name: CORE_PEER_CHAINCODEADDRESS
+              value: peer1-sportsfemale-clusterip:31652
+            - name: CORE_PEER_GOSSIP_BOOTSTRAP
+              value: peer0-sportsfemale-clusterip:31551
+            - name: CORE_PEER_GOSSIP_ENDPOINT
+              value: peer0-sportsfemale-clusterip:31551
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: 0.0.0.0:31651
+          volumeMounts:
+            - name: peer1-sportsfemale-ledger
+              mountPath: /var/ledger
+            - name: dockersock
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+  volumeClaimTemplates:
+    - metadata:
+        name: peer1-sportsfemale-ledger
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: general
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+# Expose the port 31651 as ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer1-sportsfemale-clusterip
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: peer1-sportsfemale
+
+  ports:
+    - name: peer1-sportsfemale-clusterip
+      port: 31651
+    - name: peer1-sportsfemale-cc-clusterip
+      port: 31652
+
+  type: ClusterIP
+
+---
+# Expose the port 31651 as node port -  NEEDED if you
+# are interested in connecting to the Pods from the Host
+# machine - keep in mind you would need the IP for the node
+# port service
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer1-sportsfemale-nodeport
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: peer1-sportsfemale
+
+  ports:
+    - name: peer1-sportsfemale-nodeport-751
+      port: 31651
+      nodePort: 31651
+    - name: peer1-sportsfemale-cc-nodeport-752
+      port: 31652
+      nodePort: 31652
+
+  type: NodePort

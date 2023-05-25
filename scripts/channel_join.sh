@@ -19,7 +19,7 @@ export CORE_PEER_MSPCONFIGPATH="/var/hyperledger/config/crypto-config/peerOrgani
 # Set default values for boolean inputs
 channel_create=false
 channel_update=false
-# peer channel fetch 0 evoting.block -o orderer.example.com:7050 -c evoting
+# peer channel fetch 0 evoting.block -o $ORDERER_ADDRESS -c evoting
 
 # Parse command line arguments
 while [[ $# -gt 1 ]]
@@ -46,16 +46,16 @@ done
 if [[ $channel_create == true ]]
 then
     # Execute peer channel create command
-    peer channel create -o orderer.example.com:7050 -f "./evoting.tx" -c evoting
+    peer channel create -o $ORDERER_ADDRESS -f "./evoting.tx" -c evoting
     
 fi
-peer channel join -o orderer.example.com:7050 -b "./evoting.block"
+peer channel join -o $ORDERER_ADDRESS -b "./evoting.block"
 if [[ $channel_update == true ]]
 then
     # Execute peer channel update command
-    peer channel update -o orderer.example.com:7050 -f "./${channel_name}anchors.tx" -c evoting
+    peer channel update -o $ORDERER_ADDRESS -f "./${channel_name}anchors.tx" -c evoting
 fi
 
 export CORE_PEER_ADDRESS="peer1.$channel_name.example.com:7051"
 export CORE_PEER_MSPCONFIGPATH="/var/hyperledger/config/crypto-config/peerOrganizations/$channel_name.example.com/users/User1@$channel_name.example.com/msp"
-peer channel join -o orderer.example.com:7050 -b "./evoting.block"
+peer channel join -o $ORDERER_ADDRESS -b "./evoting.block"

@@ -5,9 +5,9 @@
 # Updated for Fabric 2.x : May 2020
 
 ###############################################################################
-#
-#    Peer section
-#
+#                                                                             #
+#    Peer section                                                             #
+#                                                                             #
 ###############################################################################
 peer:
   # The Peer id is used for identifying this Peer instance.

@@ -21,10 +21,10 @@ spec:
         - name: orderer
 
           # Image used
-          image: orderer
+          image: mutti11/orderer
 
           # Uncomment the following during development/testing of the image
-          # imagePullPolicy: Always
+          imagePullPolicy: Always
           env:
             # Points to the orderer.yaml
             - name: FABRIC_CFG_PATH
@@ -50,7 +50,7 @@ spec:
             storage: 1Gi
 
 ---
-# Expose the port 7050 as ClusterIP
+# Expose the port 30750 as ClusterIP
 apiVersion: v1
 kind: Service
 metadata:
@@ -65,7 +65,7 @@ spec:
 
   ports:
     - name: orderer-clusterip
-      port: 7050
+      port: 30750
 
   type: ClusterIP
 
@@ -88,7 +88,7 @@ spec:
 
   ports:
     - name: orderer-nodeport
-      port: 7050
-      nodePort: 7050
+      port: 30750
+      nodePort: 30750
 
   type: NodePort

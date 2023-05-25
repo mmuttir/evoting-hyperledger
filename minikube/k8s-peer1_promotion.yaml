@@ -1,0 +1,116 @@
+# YAML for launching the orderer
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: peer1-promotion
+  labels:
+    app: peer1-promotion
+spec:
+  serviceName: peer1-promotion
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer1-promotion
+  template:
+    metadata:
+      labels:
+        app: peer1-promotion
+    spec:
+      containers:
+        - name: peer1-promotion
+          # Image used
+          image: mutti11/peer1_promotion
+          # Uncomment the following during development/testing of the image
+          imagePullPolicy: Always
+          env:
+            - name: FABRIC_CFG_PATH
+              value: /var/hyperledger/config
+            - name: CORE_PEER_LOCALMSPID
+              value: PromotionMSP
+            - name: CORE_PEER_ID
+              value: peer1.promotion.example.com
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+            - name: ORDERER_ADDRESS
+              value: orderer-clusterip:30750
+            - name: ORG_CONTEXT
+              value: promotion
+            - name: CORE_PEER_ADDRESS
+              value: peer1-promotion-clusterip:31051
+            - name: CORE_PEER_LISTENADDRESS
+              value: 0.0.0.0:31051
+            - name: CORE_PEER_CHAINCODEADDRESS
+              value: peer1-promotion-clusterip:31052
+            - name: CORE_PEER_GOSSIP_BOOTSTRAP
+              value: peer0-promotion-clusterip:30951
+            - name: CORE_PEER_GOSSIP_ENDPOINT
+              value: peer0-promotion-clusterip:30951
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: 0.0.0.0:31051
+          volumeMounts:
+            - name: peer1-promotion-ledger
+              mountPath: /var/ledger
+            - name: dockersock
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+  volumeClaimTemplates:
+    - metadata:
+        name: peer1-promotion-ledger
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: general
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+# Expose the port 31051 as ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer1-promotion-clusterip
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: peer1-promotion
+
+  ports:
+    - name: peer1-promotion-clusterip
+      port: 31051
+    - name: peer1-promotion-cc-clusterip
+      port: 31052
+
+  type: ClusterIP
+
+---
+# Expose the port 31051 as node port -  NEEDED if you
+# are interested in connecting to the Pods from the Host
+# machine - keep in mind you would need the IP for the node
+# port service
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer1-promotion-nodeport
+
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: peer1-promotion
+
+  ports:
+    - name: peer1-promotion-nodeport-751
+      port: 31051
+      nodePort: 31051
+    - name: peer1-promotion-cc-nodeport-752
+      port: 31052
+      nodePort: 31052
+
+  type: NodePort
