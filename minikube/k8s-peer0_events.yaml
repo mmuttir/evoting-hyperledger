@@ -52,10 +52,12 @@ spec:
               mountPath: /var/ledger
             - name: dockersock
               mountPath: /var/run/docker.sock
+              readOnly: true
       volumes:
         - name: dockersock
           hostPath:
             path: /var/run/docker.sock
+
   volumeClaimTemplates:
     - metadata:
         name: peer0-events-ledger
