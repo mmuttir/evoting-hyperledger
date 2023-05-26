@@ -5,6 +5,7 @@ kind: StorageClass
 metadata:
   name: general
 # Adjust provisioner for the cloud setup
-provisioner: k8s.io/minikube-hostpath
+# provisioner: k8s.io/minikube-hostpath
+provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd
