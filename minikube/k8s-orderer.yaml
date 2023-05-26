@@ -23,17 +23,13 @@ spec:
           # Image used
           image: mutti11/orderer
 
-          # Uncomment the following during development/testing of the image
+          #  NOTE: Uncomment the following during development/testing of the image
           imagePullPolicy: Always
           env:
-            # Points to the orderer.yaml
             - name: FABRIC_CFG_PATH
               value: /var/hyperledger/config
-            # Level of logging
             - name: FABRIC_LOGGING_SPEC
               value: INFO
-            - name: CORE_PEER_LOCALMSPID
-              value: OrdererMSP
           volumeMounts:
             # This is pointing to the PVC
             - name: data-orderer

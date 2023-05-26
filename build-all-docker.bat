@@ -24,5 +24,5 @@ goto :eof
     set tag=%~1
 
     echo Building %tag% image
-    docker build -t %tag% -f k8s/images/%tag%/Dockerfile .
+    docker build -t mutti11/%tag% -f k8s/images/%tag%/Dockerfile .
     goto :eof

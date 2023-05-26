@@ -39,8 +39,8 @@ spec:
               value: peer0-sportsfemale-clusterip:31551
             - name: CORE_PEER_LISTENADDRESS
               value: 0.0.0.0:31551
-            - name: CORE_PEER_CHAINCODEADDRESS
-              value: peer0-sportsfemale-clusterip:31552
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: 0.0.0.0:31552
             - name: CORE_PEER_GOSSIP_BOOTSTRAP
               value: peer1-sportsfemale-clusterip:31651
             - name: CORE_PEER_GOSSIP_ENDPOINT

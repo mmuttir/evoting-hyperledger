@@ -39,8 +39,8 @@ spec:
               value: peer1-sports-clusterip:31451
             - name: CORE_PEER_LISTENADDRESS
               value: 0.0.0.0:31451
-            - name: CORE_PEER_CHAINCODEADDRESS
-              value: peer1-sports-clusterip:31452
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: 0.0.0.0:31452
             - name: CORE_PEER_GOSSIP_BOOTSTRAP
               value: peer0-sports-clusterip:31351
             - name: CORE_PEER_GOSSIP_ENDPOINT

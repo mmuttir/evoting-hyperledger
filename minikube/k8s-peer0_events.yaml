@@ -39,8 +39,8 @@ spec:
               value: localhost:30751
             - name: CORE_PEER_LISTENADDRESS
               value: 0.0.0.0:30751
-            - name: CORE_PEER_CHAINCODEADDRESS
-              value: peer0-events-clusterip:30752
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: 0.0.0.0:30752
             - name: CORE_PEER_GOSSIP_BOOTSTRAP
               value: peer1-events-clusterip:30851
             - name: CORE_PEER_GOSSIP_ENDPOINT

@@ -15,8 +15,8 @@ export CORE_PEER_ADDRESS="peer0.$channel_name.example.com:7051"
 export CORE_PEER_MSPCONFIGPATH="/var/hyperledger/config/crypto-config/peerOrganizations/$channel_name.example.com/users/Admin@$channel_name.example.com/msp"
 peer lifecycle chaincode install mychaincode.tar.gz
 peer lifecycle chaincode approveformyorg --channelID evoting --name mychaincode --version 1.0 --init-required --package-id vote_1.0.0:c960d493bd6308e5ebeccf9d9d662f19f124bb77ef4633c99f296397031b458f --sequence 1 --waitForEvent
-peer lifecycle chaincode commit -o orderer.example.com:7050 --channelID evoting --name mychaincode --version 1.0 --sequence 1 --init-required --peerAddresses peer0.$channel_name.example.com:7051 --waitForEvent
-# peer chaincode invoke -o orderer.example.com:7050 --channelID evoting --name mychaincode --peerAddresses peer0.$channel_name.example.com:7051 --isInit -c '{"Args":["castVote", "Mutti", "Usama"]}' --waitForEvent
+peer lifecycle chaincode commit -o $ORDERER_ADDRESS --channelID evoting --name mychaincode --version 1.0 --sequence 1 --init-required --waitForEvent
+# peer chaincode invoke -o orderer.example.com:7050 --channelID evoting --name mychaincode --peerAddresses peer0.$channel_name.example.com:7051 --isInit -c '{"Args":["initLedger"]}' --waitForEvent
 
 export FABRIC_CFG_PATH=/var/hyperledger/config/peer
 export CORE_PEER_LOCALMSPID="${channel_name_cap}MSP"

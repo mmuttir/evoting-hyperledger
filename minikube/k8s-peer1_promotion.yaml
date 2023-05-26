@@ -39,8 +39,8 @@ spec:
               value: peer1-promotion-clusterip:31051
             - name: CORE_PEER_LISTENADDRESS
               value: 0.0.0.0:31051
-            - name: CORE_PEER_CHAINCODEADDRESS
-              value: peer1-promotion-clusterip:31052
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: 0.0.0.0:31052
             - name: CORE_PEER_GOSSIP_BOOTSTRAP
               value: peer0-promotion-clusterip:30951
             - name: CORE_PEER_GOSSIP_ENDPOINT

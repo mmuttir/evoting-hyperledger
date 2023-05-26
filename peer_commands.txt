@@ -4,8 +4,10 @@ Kubernetes Commands
 cd /var/hyperledger/config
 peer channel create -o $ORDERER_ADDRESS -f "./evoting.tx" -c evoting
 peer channel join -o $ORDERER_ADDRESS -b "./evoting.block"
-peer channel update -o $ORDERER_ADDRESS -f "./sportsanchors.tx" -c evoting
+peer channel update -o $ORDERER_ADDRESS -f "./eventsanchors.tx" -c evoting
 peer lifecycle chaincode package mychaincode.tar.gz --path /opt/nodechaincode --lang node --label vote_1.0.0
 peer lifecycle chaincode install mychaincode.tar.gz
 peer lifecycle chaincode queryinstalled
-peer lifecycle chaincode approveformyorg --channelID evoting --name mychaincode --version 1.0 --init-required --package-id vote_1.0.0:c960d493bd6308e5ebeccf9d9d662f19f124bb77ef4633c99f296397031b458f --sequence 1 -o $ORDERER_ADDRESS
+peer lifecycle chaincode approveformyorg --channelID evoting --name mychaincode --version 1.0 --init-required --package-id vote_1.0.0:a4597e47317ba00413a2107c18ce09a48a601bae17889cedae89135f22d5531c --sequence 1 -o $ORDERER_ADDRESS --waitForEvent
+peer lifecycle chaincode commit -o $ORDERER_ADDRESS --channelID evoting --name mychaincode --version 1.0 --sequence 1 --init-required --waitForEvent
+peer chaincode invoke -o $ORDERER_ADDRESS --channelID evoting --name mychaincode --isInit -c '{"Args":["initLedger"]}'
