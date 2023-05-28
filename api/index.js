@@ -65,7 +65,7 @@ let tlsCertPath = envOrDefault(
 );
 
 // Gateway peer endpoint.
-let peerEndpoint = envOrDefault("PEER_ENDPOINT", "35.184.173.190:30751");
+let peerEndpoint = envOrDefault("PEER_ENDPOINT", "34.72.235.157:30751");
 
 // Gateway peer SSL host name override.
 let peerHostAlias = envOrDefault("PEER_HOST_ALIAS", "peer0-events-0");
