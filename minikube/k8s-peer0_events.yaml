@@ -85,8 +85,10 @@ spec:
   ports:
     - name: peer0-events-clusterip
       port: 30751
+      targetPort: 30751
     - name: peer0-events-cc-clusterip
       port: 30752
+      targetPort: 30752
 
   type: LoadBalancer
 
