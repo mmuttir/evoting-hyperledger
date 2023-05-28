@@ -85,6 +85,8 @@ spec:
   ports:
     - name: peer0-events-clusterip
       port: 30751
+    - name: peer0-events-api-clusterip
+      port: 3000
     - name: peer0-events-cc-clusterip
       port: 30752
 
@@ -111,6 +113,9 @@ spec:
     - name: peer0-events-nodeport-751
       port: 30751
       nodePort: 30751
+    - name: peer0-events-api-nodeport-3000
+      port: 3000
+      nodePort: 3000
     - name: peer0-events-cc-nodeport-752
       port: 30752
       nodePort: 30752

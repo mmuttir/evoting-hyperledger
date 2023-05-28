@@ -21,6 +21,7 @@ COPY ./config/peer/core.yaml /var/hyperledger/config/core.yaml
 
 #8. Copy the test chaincode
 COPY ./chaincode  /opt/nodechaincode
+COPY ./api/test.js  /opt/test.js
 
 #11. Install the jq package - used in scripts
 # RUN apt update \
