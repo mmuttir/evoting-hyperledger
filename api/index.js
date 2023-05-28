@@ -65,7 +65,7 @@ let tlsCertPath = envOrDefault(
 );
 
 // Gateway peer endpoint.
-let peerEndpoint = envOrDefault("PEER_ENDPOINT", "34.72.235.157:30751");
+let peerEndpoint = envOrDefault("PEER_ENDPOINT", "35.184.173.190:30752");
 
 // Gateway peer SSL host name override.
 let peerHostAlias = envOrDefault("PEER_HOST_ALIAS", "peer0-events-0");
@@ -85,13 +85,13 @@ async function main() {
     signer: await newSigner(),
     // Default timeouts for different gRPC calls
     evaluateOptions: () => {
-      return { deadline: Date.now() + 5000 }; // 5 seconds
+      return { deadline: Date.now() + 50000 }; // 5 seconds
     },
     endorseOptions: () => {
-      return { deadline: Date.now() + 15000 }; // 15 seconds
+      return { deadline: Date.now() + 50000 }; // 15 seconds
     },
     submitOptions: () => {
-      return { deadline: Date.now() + 5000 }; // 5 seconds
+      return { deadline: Date.now() + 50000 }; // 5 seconds
     },
     commitStatusOptions: () => {
       return { deadline: Date.now() + 60000 }; // 1 minute
