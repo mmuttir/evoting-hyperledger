@@ -38,7 +38,7 @@ app.get("/castVote", (req, res) => {
   const voter = req.query.voter;
   const voted = req.query.voted;
 
-  const command = `peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["castVote", "${voter}", "${voted}"]}'`;
+  const command = `peer chaincode invoke -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["castVote", "${voter}", "${voted}"]}'`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
