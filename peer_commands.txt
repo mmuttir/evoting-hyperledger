@@ -12,3 +12,5 @@ peer lifecycle chaincode approveformyorg --channelID evoting --name mychaincode 
 peer lifecycle chaincode commit -o $ORDERER_ADDRESS --channelID evoting --name mychaincode --version 1.0 --sequence 1 --init-required --waitForEvent
 peer chaincode invoke -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["initLedger"]}' --isInit 
 peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["getAllVotes"]}'
+peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["castVote", "voter", "voted"]}'
+peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["getVote", "voter"]}'

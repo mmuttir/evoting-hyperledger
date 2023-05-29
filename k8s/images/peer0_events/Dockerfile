@@ -24,9 +24,6 @@ COPY ./chaincode  /opt/nodechaincode
 COPY ./api/test.js  /opt/test.js
 
 #11. Install the jq package - used in scripts
-# RUN apt update \
-#  && apt install -y jq \
-#  && rm -rf /var/cache/apt/*
 
 #12. Create the package folder
 RUN mkdir -p /var/hyperledger/packages

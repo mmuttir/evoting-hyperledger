@@ -15,11 +15,11 @@ app.get("/invoke", (req, res) => {
       return;
     }
     console.log(`Command output: ${stdout}`);
-    res.send("Invoke command executed successfully");
+    res.send(stdout);
   });
 });
 
-app.get("/query", (req, res) => {
+app.get("/getAllVotes", (req, res) => {
   const command =
     'peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c \'{"Args":["getAllVotes"]}\'';
 
@@ -30,7 +30,40 @@ app.get("/query", (req, res) => {
       return;
     }
     console.log(`Command output: ${stdout}`);
-    res.send("Query command executed successfully");
+    res.send(stdout);
+  });
+});
+
+app.get("/castVote", (req, res) => {
+  const voter = req.query.voter;
+  const voted = req.query.voted;
+
+  const command = `peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["castVote", "${voter}", "${voted}"]}'`;
+
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing command: ${error.message}`);
+      res.status(500).send("Error executing command");
+      return;
+    }
+    console.log(`Command output: ${stdout}`);
+    res.send(stdout);
+  });
+});
+
+app.get("/getVote", (req, res) => {
+  const voter = req.query.voter;
+
+  const command = `peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["getVote", "${voter}"]}'`;
+
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing command: ${error.message}`);
+      res.status(500).send("Error executing command");
+      return;
+    }
+    console.log(`Command output: ${stdout}`);
+    res.send(stdout);
   });
 });
 
