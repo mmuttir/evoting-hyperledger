@@ -11,6 +11,15 @@ peer lifecycle chaincode queryinstalled
 peer lifecycle chaincode approveformyorg --channelID evoting --name mychaincode --version 1.0 --init-required --package-id vote_1.0.0:a4597e47317ba00413a2107c18ce09a48a601bae17889cedae89135f22d5531c --sequence 1 -o $ORDERER_ADDRESS --waitForEvent
 peer lifecycle chaincode commit -o $ORDERER_ADDRESS --channelID evoting --name mychaincode --version 1.0 --sequence 1 --init-required --waitForEvent
 peer chaincode invoke -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["initLedger"]}' --isInit 
+apt update && apt install -y nodejs npm
+cd /opt
+npm install express
+node test.js
+
+
+
+
+
 peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["getAllVotes"]}'
 peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["castVote", "voter", "voted"]}'
 peer chaincode query -o $ORDERER_ADDRESS --channelID evoting --name mychaincode -c '{"Args":["getVote", "voter"]}'
