@@ -25,8 +25,15 @@ COPY ./chaincode  /opt/nodechaincode
 #9. Copy the API
 COPY ./api  /opt/api
 
+#10. Install node and npm
+RUN apt update && apt install nodejs npm -y
+
+#11. Install the API dependencies
+RUN cd /opt/api && npm install
+
+
 #12. Create the package folder
 RUN mkdir -p /var/hyperledger/packages
 
-#14. Launch the peer
+#13. Launch the peer
 CMD peer node start
