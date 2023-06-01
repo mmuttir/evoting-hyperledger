@@ -26,7 +26,7 @@ COPY ./chaincode  /opt/nodechaincode
 COPY ./api  /opt/api
 
 #10. Install node and npm
-RUN apt update && apt install nodejs npm -y
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends node npm
 
 #11. Install the API dependencies
 RUN cd /opt/api && npm install
